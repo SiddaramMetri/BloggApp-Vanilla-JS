@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blogg</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="mt-4 border-bottom" style="display: flex; justify-content: space-between;align-items: center;">
+            <div id="headingline">
+                <h1>BLOGG</h1>
+                <p style="font-size: 20px;">Enjoy reading blogs, go enjoy ...</p>
+            </div>
+            <button style="background-color: #4f46e5;color: white;font-weight: 400;" class="btn  rounded-2 btn-sm"
+                data-bs-toggle="modal" data-bs-target="#exampleModal" style="height: fit-content;">Create Post</button>
+
+        </div>
+        <div class="col-4">
+            <input type="text" class="form-control mt-4" placeholder="Search Blog" id="searchBlogg">
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <div id="blog-tile-container">
+
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Blogg</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container mt-2">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="email" class="form-control" id="title" placeholder="Enter a title"
+                                value="Boost Your conversion rate" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image Link</label>
+                            <input class="form-control" id="image-link" placeholder="Enter a Image link"
+                                value="https://images.unsplash.com/photo-1533450718592-29d45635f0a9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8anBnfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"></input>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="create-post" class="btn  rounded-2 btn-sm"
+                        style="height: fit-content;background-color: #4f46e5;color: white;font-weight: 400;">Add Blog
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display BLog Details Modal -->
+    <div class="modal fade" id="OpenBlogDetails" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">View Blogg</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="container-post" style="margin-top: 30px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const createBlogCard = (title, cudate, description, idx) => {
+            return `
+            <div class="card shadow p-3 mb-5 bg-body rounded" style="width: 25rem;">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted" style="font-size:13px">${cudate}</h6>
+                    <h5 class="card-title">${title}</h5>
+                    <p class="card-text">${description}</p>
+                    <a index="${idx}" id="read-more" data-bs-toggle="modal" data-bs-target="#OpenBlogDetails"  style="color:#4f46e5;font-weight: 600;text-decoration: none;cursor: pointer;" >Read More</a>
+                </div>
+            </div>
+                `;
+        };
+
+        function createBloggCard(posts) {
+            posts.forEach((post, i) => {
+                const postHtml = createBlogCard(post.title, post.currdata, post.description, i);
+                const postsContainer = document.getElementById("blog-tile-container");
+                postsContainer.classList.add('row', 'g-3');
+                const postDiv = document.createElement("div");
+                postDiv.classList.add("col-sm-12", "col-md-4");
+                postDiv.classList.add("d-flex", "d-flex-column");
+                postDiv.classList.add("justify-content-lg-between", "align-items-center");
+                postDiv.innerHTML = postHtml;
+                postsContainer.appendChild(postDiv);
+            });
+        }
+        const posts = JSON.parse(localStorage.getItem("posts"));
+        createBloggCard(posts)
+
+        const readMorelinks = document.querySelectorAll("#read-more")
+        readMorelinks.forEach((link) =>
+            link.onclick = () => {
+                const index = link.getAttribute("index")
+                localStorage.setItem("postNumber", index)
+                ModelBloggOpen()
+            })
+    </script>
+
+    <script>
+        const createPostButton = document.getElementById("create-post");
+        createPostButton.onclick = () => {
+            const titleInput = document.getElementById("title");
+            const descriptionInput = document.getElementById("description");
+            const imageLinkInput = document.getElementById("image-link");
+
+            const post = {
+                title: titleInput.value,
+                description: descriptionInput.value,
+                imageLink: imageLinkInput.value,
+                currdata: new Date().toLocaleDateString("en-us", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                }),
+            };
+
+            if (titleInput && imageLinkInput) {
+                let posts = JSON.parse(localStorage.getItem("posts"));
+                if (posts === null) posts = [];
+                posts.push(post);
+                localStorage.setItem("posts", JSON.stringify(posts));
+            }
+            location.href = "./index.html";
+        };
+    </script>
+
+    <script>
+        function ModelBloggOpen() {
+            const postNumber = localStorage.getItem("postNumber");
+            const post = posts[Number(postNumber)];
+            console.log('post', post)
+            const container = document.getElementById("container-post");
+            const postHtml = `
+                <div class="card" >
+                    <img src="${post.imageLink}" class="card-img-top" alt="no image">
+                    <div class="card-body">
+                        <h5 class="card-title">${post.title}</h5>
+                        <p class="card-text">${post.description}</p>
+                    </div>
+                </div>
+                `;
+            const div = document.createElement("div");
+            div.innerHTML = postHtml;
+            container.innerHTML = ''
+            container.appendChild(div)
+        }
+    </script>
+    <script>
+        const searchHandle = document.getElementById('searchBlogg')
+        // seach functionality
+        searchHandle.addEventListener('keyup', function (e) {
+            const Blogg = document.getElementById('blog-tile-container')
+            const posts = JSON.parse(localStorage.getItem("posts"));
+            const searchTerm = e.target.value
+            const result = posts.filter((ele, i) => {
+                return posts[i].title.toLowerCase().includes(searchTerm.toLowerCase())
+            })
+            Blogg.innerHTML = ''
+            createBloggCard(result)
+        })
+    </script>
+</body>
+
+</html>
