@@ -111,8 +111,8 @@
         };
 
         function createBloggCard(posts) {
-            posts.forEach((post, i) => {
-                const postHtml = createBlogCard(post.title, post.currdata, post.description, i);
+            posts.forEach((post) => {
+                const postHtml = createBlogCard(post.title, post.currdata, post.description, post.id);
                 const postsContainer = document.getElementById("blog-tile-container");
                 postsContainer.classList.add('row', 'g-3');
                 const postDiv = document.createElement("div");
@@ -129,7 +129,15 @@
         const readMorelinks = document.querySelectorAll("#read-more")
         readMorelinks.forEach((link) =>
             link.onclick = () => {
-                const index = link.getAttribute("index")
+                const id = link.getAttribute("index")
+                const postsDetails = JSON.parse(localStorage.getItem('posts'))
+                let index = 0
+                postsDetails.forEach((postsDetail, i) => {
+                    if (postsDetail.id == id) {
+                        index = i
+                    }
+                })
+                console.log(index)
                 localStorage.setItem("postNumber", index)
                 ModelBloggOpen()
             })
@@ -143,6 +151,7 @@
             const imageLinkInput = document.getElementById("image-link");
 
             const post = {
+                id: new Date(),
                 title: titleInput.value,
                 description: descriptionInput.value,
                 imageLink: imageLinkInput.value,
