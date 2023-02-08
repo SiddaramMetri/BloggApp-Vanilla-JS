@@ -97,6 +97,18 @@
 
 
     <script>
+        function readmore(idx) {
+            const postsDetails = JSON.parse(localStorage.getItem('posts'))
+            let index = 0
+            postsDetails.forEach((postsDetail, i) => {
+                if (postsDetail.id == idx) {
+                    index = i
+                }
+            })
+            localStorage.setItem("postNumber", index)
+            ModelBloggOpen()
+        }
+
         const createBlogCard = (title, cudate, description, idx) => {
             return `
             <div class="card shadow p-3 mb-5 bg-body rounded" style="width: 25rem;">
@@ -104,11 +116,14 @@
                     <h6 class="card-subtitle mb-2 text-muted" style="font-size:13px">${cudate}</h6>
                     <h5 class="card-title">${title}</h5>
                     <p class="card-text">${description}</p>
-                    <a index="${idx}" id="read-more" data-bs-toggle="modal" data-bs-target="#OpenBlogDetails"  style="color:#4f46e5;font-weight: 600;text-decoration: none;cursor: pointer;" >Read More</a>
+                    <a index="${idx}"  id="${idx}" data-bs-toggle="modal" data-bs-target="#OpenBlogDetails"  style="color:#4f46e5;font-weight: 600;text-decoration: none;cursor: pointer;" >Read More</a>
                 </div>
             </div>
-                `;
+    `;
         };
+
+        const posts = JSON.parse(localStorage.getItem("posts"));
+        createBloggCard(posts);
 
         function createBloggCard(posts) {
             posts.forEach((post) => {
@@ -121,26 +136,12 @@
                 postDiv.classList.add("justify-content-lg-between", "align-items-center");
                 postDiv.innerHTML = postHtml;
                 postsContainer.appendChild(postDiv);
+                const a = document.getElementById(post.id)
+                a.onclick = () => readmore(post.id)
             });
         }
-        const posts = JSON.parse(localStorage.getItem("posts"));
-        createBloggCard(posts)
 
-        const readMorelinks = document.querySelectorAll("#read-more")
-        readMorelinks.forEach((link) =>
-            link.onclick = () => {
-                const id = link.getAttribute("index")
-                const postsDetails = JSON.parse(localStorage.getItem('posts'))
-                let index = 0
-                postsDetails.forEach((postsDetail, i) => {
-                    if (postsDetail.id == id) {
-                        index = i
-                    }
-                })
-                console.log(index)
-                localStorage.setItem("postNumber", index)
-                ModelBloggOpen()
-            })
+
     </script>
 
     <script>
@@ -151,7 +152,7 @@
             const imageLinkInput = document.getElementById("image-link");
 
             const post = {
-                id: new Date(),
+                id: Number(new Date()),
                 title: titleInput.value,
                 description: descriptionInput.value,
                 imageLink: imageLinkInput.value,
@@ -177,16 +178,15 @@
         function ModelBloggOpen() {
             const postNumber = localStorage.getItem("postNumber");
             const post = posts[Number(postNumber)];
-            console.log('post', post)
             const container = document.getElementById("container-post");
             const postHtml = `
-                <div class="card" >
+                <div class="card">
                     <img src="${post.imageLink}" class="card-img-top" alt="no image">
-                    <div class="card-body">
-                        <h5 class="card-title">${post.title}</h5>
-                        <p class="card-text">${post.description}</p>
+                        <div class="card-body">
+                            <h5 class="card-title">${post.title}</h5>
+                            <p class="card-text">${post.description}</p>
+                        </div>
                     </div>
-                </div>
                 `;
             const div = document.createElement("div");
             div.innerHTML = postHtml;
@@ -196,13 +196,13 @@
     </script>
     <script>
         const searchHandle = document.getElementById('searchBlogg')
-        // seach functionality
+        // search functionality
         searchHandle.addEventListener('keyup', function (e) {
             const Blogg = document.getElementById('blog-tile-container')
             const posts = JSON.parse(localStorage.getItem("posts"));
             const searchTerm = e.target.value
-            const result = posts.filter((ele, i) => {
-                return posts[i].title.toLowerCase().includes(searchTerm.toLowerCase())
+            const result = posts.filter((post) => {
+                return post.title.toLowerCase().includes(searchTerm.toLowerCase())
             })
             Blogg.innerHTML = ''
             createBloggCard(result)
